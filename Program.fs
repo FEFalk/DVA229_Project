@@ -14,7 +14,7 @@ open Shape
 
 module Main =
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
-    let rec loop observable (shapeList : (IShapeObject) list) = async{
+    let rec loop observable (shapeList : (ShapeObject) list) = async{
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
         for r in shapeList do
             let pen = new Pen((r.Color : Color), Width=12.0f)
@@ -55,7 +55,7 @@ module Main =
 
     //The map transforms the observation (click) by the given function. In our case this means
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
-    let shapes : (IShapeObject) list = []
+    let shapes : (ShapeObject) list = []
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes) ; System.Windows.Forms.Application.Run(GUI.form)
