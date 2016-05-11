@@ -12,7 +12,7 @@ module GUI =
             let cp = base.CreateParams
             cp.ExStyle <- cp.ExStyle ||| 0x02000000
             cp
-    let form = new CompositedForm(Text="Demo", TopMost=true, Width=1200, Height=800)
+    let form = new CompositedForm(Text="Demo", TopMost=true, Width=1220, Height=800)
     
     let btnAddRect = new Button(Text="Add square")
     let btnAddCircle = new Button(Text="Add circle", Top=20)
@@ -30,12 +30,7 @@ module GUI =
     let comboBoxColor = new ComboBox(Top=20, Left=120, DataSource=items, DropDownStyle = ComboBoxStyle.DropDownList)
     
 
-    let inputDisplay = new Label(Text="0", Left=200, BorderStyle = BorderStyle.Fixed3D)
-    let outputDisplay = new Label(Text="", Top=40, Left=200, BorderStyle = BorderStyle.Fixed3D)
-    let outputExpressionDisplay = new Label(Text="", Top=80, Left=200, BorderStyle = BorderStyle.Fixed3D)
-
     let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig]
 
-    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor;
-                              outputDisplay; inputDisplay; outputExpressionDisplay|]
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor;|]
     
