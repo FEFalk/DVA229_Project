@@ -10,13 +10,39 @@ open System.Windows.Forms
 
 open System.ComponentModel  
 open System.Drawing  
+open System.IO
 open Shape
+
+
+module Print = 
+      
+    let ParseFile = 
+        let ParseFile = File.ReadAllLines("Z:\\HomeConcepts_07 Report.err")
+    
+        let ParseFileForErrors = 
+            ParseFile
+            |> Seq.filter(fun x -> if x.Contains("_warning_") then false else true)
+    
+        let ParseFileForWarnings = 
+            ParseFile
+            |> Seq.filter(fun x -> if x.Contains("_warning_") then true else false)
+
+        let myFileSet = 
+            let mySubFileSet = Seq.append ParseFileForErrors ParseFileForWarnings    
+            let FileSummary = "Number of Entries : " + ParseFile.Length.ToString() + " Number of Errors : " + (ParseFileForErrors |> Seq.length).ToString()
+            Seq.append ( FileSummary |> Seq.singleton) mySubFileSet
+    
+        File.WriteAllLines("Z:\\Test.txt", myFileSet)        
+
+    ParseFile
 
 module Main =
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
     let rec loop observable (shapeList : (ShapeObject) list) selectedID = async{
         GUI.form.Paint.Add(fun draw -> draw.Graphics.Clear(Color.White))
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
+     
+
         for r in shapeList do
             let brush = new SolidBrush(r.Color)
             if r.isRect then GUI.form.Paint.Add(fun draw->
@@ -56,8 +82,9 @@ module Main =
         | 9 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize true) shapeList) selectedID
 //        | 9 -> return! loop observable (removeShape shapeList selectedID) selectedID
     
-
+    
         GUI.form.Refresh()
+       
         //The last thing we do is a recursive call to ourselves, thus looping
     }
 
