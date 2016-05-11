@@ -14,14 +14,14 @@ open Shape
 
 module Main =
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
-    let rec loop observable shapeList = async{
+    let rec loop observable (shapeList : (IShapeObject) list) = async{
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
-        for (r, c, isRect) in shapeList do
-            let pen = new Pen((c : Color), Width=12.0f)
-            if isRect then GUI.form.Paint.Add(fun draw->
-                           draw.Graphics.DrawRectangle(pen, Rectangle.Round r))
+        for r in shapeList do
+            let pen = new Pen((r.Color : Color), Width=12.0f)
+            if r.isRect then GUI.form.Paint.Add(fun draw->
+                           draw.Graphics.DrawRectangle(pen, Rectangle.Round r.Rect))
             else GUI.form.Paint.Add(fun draw->
-                 draw.Graphics.DrawEllipse(pen, r))
+                 draw.Graphics.DrawEllipse(pen, r.Rect))
         
         printfn "no of rects: %d" (List.length shapeList)
         
@@ -29,7 +29,7 @@ module Main =
         //Next, since we don't have all inputs (yet) we need to wait for them to become available (Async.Await)
         //let! (bang) enables execution to continue on other computations and threads.
         let! somethingObservable = Async.AwaitObservable(observable) 
-
+        
 
         //Now that we have recieved a new input we can perform the rest of our computations
         match somethingObservable with
@@ -55,15 +55,7 @@ module Main =
 
     //The map transforms the observation (click) by the given function. In our case this means
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
-    let shapes : (RectangleF * Color * bool) list = []
-    let temp = new System.Drawing.RectangleF(50.5f, 30.1f, 20.0f, 10.0f)
-    let exitbutton=new Button(Top=190,Left=200)
-    exitbutton.Text<-"Exit"
-    let pen = new Pen(Color.Blue, Width=12.0f)
-    GUI.form.Paint.Add(fun draw-> draw.Graphics.DrawRectangle(pen, Rectangle.Round temp))
-
-    GUI.form.Controls.Add(exitbutton)
-    exitbutton.Click.Add(fun exit->GUI.form.Close())
+    let shapes : (IShapeObject) list = []
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes) ; System.Windows.Forms.Application.Run(GUI.form)
