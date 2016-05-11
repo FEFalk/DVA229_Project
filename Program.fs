@@ -11,7 +11,6 @@ open System.Windows.Forms
 open System.ComponentModel  
 open System.Drawing  
 open Shape
-#DEFINE 
 
 module Main =
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
@@ -51,16 +50,19 @@ module Main =
         | "↑" -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).moveY true) shapeList) selectedID
         | "↓" -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).moveY false) shapeList) selectedID
         | "Set color" -> let selectedColorString = GUI.comboBoxColor.Text in let selectedColor = match selectedColorString with
-                                                                                                    | "Blue" -> Color.Blue
-                                                                                                    | "Red" -> Color.Red
-                                                                                                    | "Green" -> Color.Green
-                                                                                                    | "Yellow" -> Color.Yellow
-                                                                                                    | "Purple" -> Color.Purple
-                            return! loop observable (replaceRectangle ((getShape shapeList selectedID).changeColor selectedColor) shapeList) selectedID
+                                                                                        | "Blue" -> Color.Blue
+                                                                                        | "Red" -> Color.Red
+                                                                                        | "Green" -> Color.Green
+                                                                                        | "Yellow" -> Color.Yellow
+                                                                                        | "Purple" -> Color.Purple
+                return! loop observable (replaceRectangle ((getShape shapeList selectedID).changeColor selectedColor) shapeList) selectedID
                 //If list is empty we want nothing to be selected. If at end of list we want to start over from the head (index 0).
         | "Select next" ->  if List.isEmpty shapeList then return! loop observable shapeList -1 
                                    elif selectedID >= (List.length shapeList - 1) then return! loop observable shapeList 0 
                                    else return! loop observable shapeList (selectedID + 1)
+        | 8 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize false) shapeList) selectedID
+        | 9 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize true) shapeList) selectedID
+//        | 9 -> return! loop observable (removeShape shapeList selectedID) selectedID
         
 
         //The last thing we do is a recursive call to ourselves, thus looping
@@ -79,7 +81,7 @@ module Main =
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
     let shapes : (ShapeObject) list = []
 
-    
+
     
 
     //Starts the main loop and opens the GUI
