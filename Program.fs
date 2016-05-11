@@ -18,6 +18,7 @@ module Main =
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
         for r in shapeList do
             let pen = new Pen((r.Color : Color), Width=12.0f)
+            
             if r.isRect then GUI.form.Paint.Add(fun draw->
                            draw.Graphics.DrawRectangle(pen, Rectangle.Round r.Rect))
             else GUI.form.Paint.Add(fun draw->
@@ -30,17 +31,16 @@ module Main =
         //let! (bang) enables execution to continue on other computations and threads.
         let! somethingObservable = Async.AwaitObservable(observable) 
         
-
+   
         //Now that we have recieved a new input we can perform the rest of our computations
         match somethingObservable with
         | 0 -> return! loop observable (addShape shapeList true)
-        | 1 -> return! loop observable (addShape shapeList true)
+        | 1 -> return! loop observable (addShape2 shapeList true)
         | 2 -> return! loop observable (addShape shapeList false)
         | 3 -> return! loop observable (addShape shapeList true)
-        | 4 -> return! loop observable (addShape shapeList true)
+        | 4 -> return! loop observable (removeShape shapeList)
         
-        
-
+        GUI.form.Refresh()
         //The last thing we do is a recursive call to ourselves, thus looping
     }
 
