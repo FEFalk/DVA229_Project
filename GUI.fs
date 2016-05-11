@@ -14,16 +14,16 @@ module GUI =
             cp
     let form = new CompositedForm(Text="Demo", TopMost=true, Width=500, Height=600)
     
-    let btnAdd0 = new Button(Text="0")
-    let btnAdd1 = new Button(Text="1", Top=20)
-    let btnAdd2 = new Button(Text="2", Top=40)
-    let btnAdd3 = new Button(Text="3", Top=60)
-    let btnAdd4 = new Button(Text="4", Top=80)
-    let btnAdd5 = new Button(Text="5", Top=100)
-    let btnAdd6 = new Button(Text="6", Top=120)
-    let btnAdd7 = new Button(Text="7", Top=140)
-    let btnAdd8 = new Button(Text="8", Top=160)
-    let btnAdd9 = new Button(Text="9", Top=180)
+    let btnAddRect = new Button(Text="Add square")
+    let btnAddCircle = new Button(Text="Add circle", Top=20)
+    let btnMoveX = new Button(Text="←", Top=40)
+    let btnMovex = new Button(Text="→", Top=60)
+    let btnMovey = new Button(Text="↑", Top=80)
+    let btnMoveY = new Button(Text="↓", Top=100)
+    let btnSetcolor = new Button(Text="Set color", Top=120)
+    let btnSelect = new Button(Text="Select next", Top=140)
+    let btnResizesmall = new Button(Text="Resize smaller", Top=160)
+    let btnResizebig = new Button(Text="Resize bigger", Top=180)
 
     let items = [|"Blue";"Red";"Green";"Yellow";"Purple"|]
     let comboBoxColor = new ComboBox(Top=20, Left=120, DataSource=items, DropDownStyle = ComboBoxStyle.DropDownList)
@@ -33,8 +33,8 @@ module GUI =
     let outputDisplay = new Label(Text="", Top=40, Left=200, BorderStyle = BorderStyle.Fixed3D)
     let outputExpressionDisplay = new Label(Text="", Top=80, Left=200, BorderStyle = BorderStyle.Fixed3D)
 
-    let buttonList = [btnAdd0; btnAdd1; btnAdd2; btnAdd3; btnAdd4; btnAdd5; btnAdd6; btnAdd7; btnAdd8; btnAdd9]
+    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig]
 
-    form.Controls.AddRange [| btnAdd0 ; btnAdd1; btnAdd2 ; btnAdd3; btnAdd4 ; btnAdd5; btnAdd6 ; btnAdd7; btnAdd8 ; btnAdd9; comboBoxColor; grid;
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor;
                               outputDisplay; inputDisplay; outputExpressionDisplay|]
     

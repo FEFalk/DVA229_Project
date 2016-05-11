@@ -52,8 +52,10 @@ module Main =
         | 7 ->  if List.isEmpty shapeList then return! loop observable shapeList -1 
                                    elif selectedID >= (List.length shapeList - 1) then return! loop observable shapeList 0 
                                    else return! loop observable shapeList (selectedID + 1)
-        | 8 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).moveY false) shapeList) selectedID
-        | 9 -> return! loop observable (removeShape shapeList) 0
+        | 8 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize false) shapeList) selectedID
+        | 9 -> return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize true) shapeList) selectedID
+//        | 9 -> return! loop observable (removeShape shapeList selectedID) selectedID
+    
 
         GUI.form.Refresh()
         //The last thing we do is a recursive call to ourselves, thus looping
