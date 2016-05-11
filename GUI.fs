@@ -12,7 +12,7 @@ module GUI =
             let cp = base.CreateParams
             cp.ExStyle <- cp.ExStyle ||| 0x02000000
             cp
-    let form = new CompositedForm(Text="Demo", TopMost=true, Width=500, Height=600)
+    let form = new CompositedForm(Text="Demo", TopMost=true, Width=1200, Height=800)
     
     let btnAdd0 = new Button(Text="0")
     let btnAdd1 = new Button(Text="1", Top=20)
@@ -25,6 +25,7 @@ module GUI =
     let btnAdd8 = new Button(Text="8", Top=160)
     let btnAdd9 = new Button(Text="9", Top=180)
 
+    
     let items = [|"Blue";"Red";"Green";"Yellow";"Purple"|]
     let comboBoxColor = new ComboBox(Top=20, Left=120, DataSource=items, DropDownStyle = ComboBoxStyle.DropDownList)
     
@@ -35,6 +36,6 @@ module GUI =
 
     let buttonList = [btnAdd0; btnAdd1; btnAdd2; btnAdd3; btnAdd4; btnAdd5; btnAdd6; btnAdd7; btnAdd8; btnAdd9]
 
-    form.Controls.AddRange [| btnAdd0 ; btnAdd1; btnAdd2 ; btnAdd3; btnAdd4 ; btnAdd5; btnAdd6 ; btnAdd7; btnAdd8 ; btnAdd9; comboBoxColor; grid;
+    form.Controls.AddRange [| btnAdd0 ; btnAdd1; btnAdd2 ; btnAdd3; btnAdd4 ; btnAdd5; btnAdd6 ; btnAdd7; btnAdd8 ; btnAdd9; comboBoxColor;
                               outputDisplay; inputDisplay; outputExpressionDisplay|]
     
