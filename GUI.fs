@@ -6,7 +6,7 @@ namespace Demo
 module GUI = 
     open System.Windows.Forms
 
-    let form = new Form(Text="Demo", TopMost=true)
+    let form = new Form(Text="Demo", TopMost=true, Width=500, Height=600)
 
     let btnAdd0 = new Button(Text="0")
     let btnAdd1 = new Button(Text="1", Top=20)
