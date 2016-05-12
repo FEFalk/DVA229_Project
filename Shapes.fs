@@ -12,17 +12,16 @@ module Shape =
         member val Color = c
         member val isRect = isRect
         member val id = id
-        default this.moveX movingRight = if movingRight then (new ShapeObject(this.Rect.X+10.0f, this.Rect.Y, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
-                                            else (new ShapeObject(this.Rect.X-10.0f, this.Rect.Y, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
-        default this.moveY movingRight = if movingRight then (new ShapeObject(this.Rect.X, this.Rect.Y-10.0f, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
-                                             else (new ShapeObject(this.Rect.X, this.Rect.Y+10.0f, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
-        default this.resize resize = if resize then (new ShapeObject(this.Rect.X, this.Rect.Y, this.Rect.Width+10.0f, this.Rect.Height+10.0f, this.Color, this.isRect, this.id))
+        default this.moveX movingRight = if movingRight then (new ShapeObject(this.Rect.X+40.0f, this.Rect.Y, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
+                                            else (new ShapeObject(this.Rect.X-40.0f, this.Rect.Y, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
+        default this.moveY movingUp = if movingUp then (new ShapeObject(this.Rect.X, this.Rect.Y-40.0f, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
+                                             else (new ShapeObject(this.Rect.X, this.Rect.Y+40.0f, this.Rect.Width, this.Rect.Height, this.Color, this.isRect, this.id))
+        default this.resize enlarging = if enlarging then (new ShapeObject(this.Rect.X, this.Rect.Y, this.Rect.Width+10.0f, this.Rect.Height+10.0f, this.Color, this.isRect, this.id))
                                             else (new ShapeObject(this.Rect.X, this.Rect.Y, this.Rect.Width-10.0f, this.Rect.Height-10.0f, this.Color, this.isRect, this.id))
-
         default this.changeColor (c : Color) = (new ShapeObject(this.Rect.X, this.Rect.Y, this.Rect.Width, this.Rect.Height, c, this.isRect, this.id))
         
 
-    let addShape (shapeList : (ShapeObject) list) isRect = List.append shapeList [(new ShapeObject(400.0f, 400.0f, 20.0f, 20.0f, Color.Blue, isRect, (List.length shapeList)))]
+    let addShape (shapeList : (ShapeObject) list) isRect = List.append shapeList [(new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, Color.Blue, isRect, (List.length shapeList)))]
         
                                                                                   //If trying to access rect without having one selected
     let rec replaceRectangle (r : ShapeObject) (shapeList : (ShapeObject) list) = if r.id = -1 then shapeList
@@ -37,7 +36,7 @@ module Shape =
                                                                   | [] -> failwith "List is empty or reached end of list in getRect!"
                                                                   | x::xs when x.id = id -> x
                                                                   | x::xs -> getShape xs id
-    
+                                                          
     let rec remove i l =
             match i, l with
             | 0, x::xs -> xs
