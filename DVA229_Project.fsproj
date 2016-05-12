@@ -70,8 +70,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Shapes.fs" />
     <Compile Include="GUI.fs" />
+    <Compile Include="Shapes.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />

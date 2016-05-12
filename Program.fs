@@ -14,7 +14,7 @@ open Shape
 
 module Main =
     let brushArray = [new SolidBrush(Color.Blue);new SolidBrush(Color.Red);new SolidBrush(Color.Green);new SolidBrush(Color.Yellow);new SolidBrush(Color.Purple)]
-    let pen = new Pen(Color.Black, Width=1.0f)
+    let pen = new Pen(Color.Aquamarine, Width=2.0f)
     let rec getBrushWithColor c (array : SolidBrush list) = match array with
                                                             | [] -> failwith "Color was not found in brush list!"
                                                             | x::xs when x.Color = c -> x
@@ -31,6 +31,9 @@ module Main =
         for r in shapeList do
             if r.isRect then GUI.graph.FillRectangle(getBrushWithColor r.Color brushArray, Rectangle.Round r.Rect)
             else GUI.graph.FillEllipse(getBrushWithColor r.Color brushArray, r.Rect)
+        if selectedID > -1 then if selectedShape.isRect then GUI.graph.DrawRectangle(pen, Rectangle.Round selectedShape.Rect)
+                                                        else GUI.graph.DrawEllipse(pen, selectedShape.Rect)
+        
 
         printfn "no of rects: %d" (List.length shapeList)
         printfn "selected id: %d" (selectedID)
@@ -76,12 +79,31 @@ module Main =
                                                     | c::cs -> Observable.merge (Observable.map (fun _-> c.Text) c.Click) (mergeObs cs)
              mergeObs GUI.buttonList
 
+
+//    let stuffToDoWhenKeyPressed s (e : KeyEventArgs) = 
+//        match e with
+//        | e when e.KeyCode = Keys.S -> "W"
+//        | e when e.KeyCode = Keys.W -> "S" 
+//        | _  -> "?" 
+    //GUI.form.KeyDown.AddHandler(new KeyEventHandler(stuffToDoWhenKeyPressed))
+
+
     //The map transforms the observation (click) by the given function. In our case this means
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
     let shapes : (ShapeObject) list = []
 
+    let stringToObject (words : string list) = let x = float32 (List.head words) 
+                                               let y = float32 (List.nth words 1)
+                                               let w = float32 (List.nth words 2)
+                                               let h = float32 (List.nth words 3)
+                                               let cr = int (List.nth words 4)
+                                               let cg = int (List.nth words 5)
+                                               let cb = int (List.nth words 6)
+                                               let isRect = Boolean.Parse (List.nth words 7)
+                                               let id = int (List.nth words 8)
+                                               let color = Color.FromArgb(255, cr, cg, cb)
+                                               new ShapeObject(x, y, w, h, color, isRect, id)
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes -1) ; System.Windows.Forms.Application.Run(GUI.form)
 
-   

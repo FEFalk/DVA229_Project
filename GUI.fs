@@ -3,7 +3,6 @@
 //
 //GUI: Creates a simple form with two buttons
 namespace Demo
-open Shape
 open System.Drawing  
 module GUI = 
     open System.Windows.Forms
@@ -34,17 +33,17 @@ module GUI =
     form.Init()
     let graph : Graphics = form.CreateGraphics()         
 
-    let btnAddRect = new Button(Text="Add square")
-    let btnAddCircle = new Button(Text="Add circle", Top=20)
+    let btnAddRect = new Button(Text="Add square", Top=690, Left=10, Size=new Size(100, 60))
+    let btnAddCircle = new Button(Text="Add circle", Top=690, Left=120, Size=new Size(100, 60))
     let btnMoveX = new Button(Text="←", Top=40)
     let btnMovex = new Button(Text="→", Top=60)
     let btnMovey = new Button(Text="↑", Top=80)
     let btnMoveY = new Button(Text="↓", Top=100)
-    let btnSetcolor = new Button(Text="Set color", Top=120)
-    let btnSelect = new Button(Text="Select next", Top=140)
-    let btnResizesmall = new Button(Text="Resize smaller", Top=160)
-    let btnResizebig = new Button(Text="Resize bigger", Top=180)
-    let btnRemove = new Button(Text="Remove", Top=200)
+    let btnSetcolor = new Button(Text="Set color", Top=690, Left=230, Size=new Size(100, 60))
+    let btnSelect = new Button(Text="Select next", Top=690, Left=340, Size=new Size(100, 60))
+    let btnResizesmall = new Button(Text="Resize smaller", Top=690, Left=450, Size=new Size(100, 60))
+    let btnResizebig = new Button(Text="Resize bigger", Top=690, Left=560, Size=new Size(100, 60))
+    let btnRemove = new Button(Text="Remove", Top=690, Left=670, Size=new Size(100, 60))
 
     
     let items = [|"Blue";"Red";"Green";"Yellow";"Purple"|]

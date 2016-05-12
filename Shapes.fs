@@ -49,12 +49,21 @@ module Shape =
                                                                   | [] -> failwith "List is empty or reached end of list in getShape!"
                                                                   | x::xs when x.id = id -> x
                                                                   | x::xs -> getShape xs id
-                                                          
+                                           
+                                            
     let rec remove i l =
             match i, l with
             | 0, x::xs -> xs
             | i, x::xs -> x::remove (i - 1) xs
             | i, [] -> failwith "index out of range"
 
-    let removeShape (shapeList : (ShapeObject) list) id = if id = -1 then shapeList else remove id shapeList 
+    let rec HupdateID (l : ShapeObject list) n = match l with
+                                                | x::[] -> [new ShapeObject(x.Rect.X, x.Rect.Y, x.Rect.Width, x.Rect.Height, x.Color, x.isRect, n)]
+                                                | x::xs -> new ShapeObject(x.Rect.X, x.Rect.Y, x.Rect.Width, x.Rect.Height, x.Color, x.isRect, n)::HupdateID xs (n+1)
+    let updateID l = HupdateID l 0
+
+    let removeShape (shapeList : (ShapeObject) list) id = let selectedShape = getShape shapeList id
+                                                          GUI.form.Invalidate(new Region(new RectangleF(selectedShape.Rect.X-40.0f, selectedShape.Rect.Y-40.0f, selectedShape.Rect.Width*4.0f, selectedShape.Rect.Height*4.0f)), false)
+                                                          GUI.form.Update()
+                                                          if id = -1 then shapeList else updateID (remove id shapeList)
 
