@@ -30,13 +30,15 @@ module Main =
         
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
         for r in shapeList do
+//            for r2 in shapeList do
+//                if r1.Rect.IntersectsWith(r2.Rect) then (intersectionRectangle r1 r2).
             if r.isRect then GUI.graph.FillRectangle(getBrushWithColor r.Color brushArray, Rectangle.Round r.Rect)
             else GUI.graph.FillEllipse(getBrushWithColor r.Color brushArray, r.Rect)
         if selectedID > -1 then if selectedShape.isRect then GUI.graph.DrawRectangle(pen, Rectangle.Round selectedShape.Rect)
                                                         else GUI.graph.DrawEllipse(pen, selectedShape.Rect)
         
 
-        printfn "no of rects: %d" (List.length shapeList)
+        printfn "no. of rects: %d" (List.length shapeList)
         printfn "selected id: %d" (selectedID)
 
         
@@ -48,9 +50,9 @@ module Main =
         //Now that we have recieved a new input we can perform the rest of our computations
         match somethingObservable with
         | "Add square" | "T"->  let selectedColor = Color.FromName(GUI.comboBoxColor.Text)
-                                return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, selectedColor, true, -1))) selectedID
+                                return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, 0, selectedColor, true, -1))) selectedID
         | "Add circle" | "Y"-> let selectedColor = Color.FromName(GUI.comboBoxColor.Text)
-                               return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, selectedColor, false, -1))) selectedID
+                               return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, 0, selectedColor, false, -1))) selectedID
         | "→" | "D" -> return! loop observable (replaceRectangle (selectedShape.moveX true) shapeList) selectedID
         | "←" | "A" -> return! loop observable (replaceRectangle (selectedShape.moveX false) shapeList) selectedID
         | "↑" | "W" -> return! loop observable (replaceRectangle (selectedShape.moveY true) shapeList) selectedID
@@ -63,8 +65,10 @@ module Main =
                                   GUI.form.Invalidate(new Region(new RectangleF(selectedShape.Rect.X-42.0f, selectedShape.Rect.Y-42.0f, selectedShape.Rect.Width*4.0f, selectedShape.Rect.Height*4.0f)), false)
                                   if selectedID >= (List.length shapeList - 1) then return! loop observable shapeList 0 
                                                                                else return! loop observable shapeList (selectedID + 1)
-        | "Resize smaller" | "Z" -> return! loop observable (replaceRectangle (selectedShape.resize false) shapeList) selectedID
+        | "Move Forward" | "F" -> return! loop observable (replaceRectangle (selectedShape.moveZ true) shapeList) selectedID
+        | "Move Backward" | "G" -> return! loop observable (replaceRectangle (selectedShape.moveZ false) shapeList) selectedID
         | "Resize bigger" | "X" -> return! loop observable (replaceRectangle (selectedShape.resize true) shapeList) selectedID
+        | "Resize smaller" | "Z" -> return! loop observable (replaceRectangle (selectedShape.resize false) shapeList) selectedID
         | "Remove" | "R" -> return! loop observable (removeShape shapeList selectedID) -1
         | _ -> return! loop observable shapeList selectedID
 
@@ -93,13 +97,14 @@ module Main =
                                                let y = float32 (List.nth words 1)
                                                let w = float32 (List.nth words 2)
                                                let h = float32 (List.nth words 3)
-                                               let cr = int (List.nth words 4)
-                                               let cg = int (List.nth words 5)
-                                               let cb = int (List.nth words 6)
-                                               let isRect = Boolean.Parse (List.nth words 7)
-                                               let id = int (List.nth words 8)
+                                               let z = int (List.nth words 4)
+                                               let cr = int (List.nth words 5)
+                                               let cg = int (List.nth words 6)
+                                               let cb = int (List.nth words 7)
+                                               let isRect = Boolean.Parse (List.nth words 8)
+                                               let id = int (List.nth words 9)
                                                let color = Color.FromArgb(255, cr, cg, cb)
-                                               new ShapeObject(x, y, w, h, color, isRect, id)
+                                               new ShapeObject(x, y, w, h, z, color, isRect, id)
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes -1) ; System.Windows.Forms.Application.Run(GUI.form)

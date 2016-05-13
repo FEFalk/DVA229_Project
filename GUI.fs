@@ -23,7 +23,8 @@ module GUI =
             this.KeyPreview <- true
             //this.Paint.AddHandler(new System.Windows.Forms.PaintEventHandler(fun s pe -> this.Event_Paint(s, pe)))
 
-        override this.OnPaint(e : PaintEventArgs) = 
+        override this.OnPaintBackground(e : PaintEventArgs) = 
+            e.Graphics.Clear(Color.White)
             let pen = new Pen(Color.Black, Width=1.0f)
             for i = 1 to 30 do
                 e.Graphics.DrawLine(pen, Point(i*40, 0), Point(i*40, 800))
@@ -44,17 +45,19 @@ module GUI =
     let btnResizesmall = new Button(Text="Resize smaller (Z)", Top=700, Left=620, Size=new Size(100, 40), Name="Resize smaller")
     let btnResizebig = new Button(Text="Resize bigger (X)", Top=700, Left=740, Size=new Size(100, 40), Name="Resize bigger")
     let btnRemove = new Button(Text="Remove (R)", Top=700, Left=860, Size=new Size(100, 40), Name="Remove")
+    let btnMoveUp = new Button(Text="Move Forward (F)", Top=650, Left=800, Size=new Size(100, 40), Name="Move Forward")
+    let btnMoveDown = new Button(Text="Move Backward (G)", Top=650, Left=900, Size=new Size(100, 40), Name="Move Backward")
     let btnMoveX = new Button(Text="←", Top=720, Left = 1020, Name="←", Width=40)
     let btnMovex = new Button(Text="→", Top=720, Left = 1130, Name="→", Width=40)
     let btnMovey = new Button(Text="↑", Top=690, Left = 1070, Name="↑", Width=40)
     let btnMoveY = new Button(Text="↓", Top=720, Left = 1070, Name="↓", Width=40)
-    let panel = new Panel(Text="Hej", Top=670, Size=new Size(1220, 130), Name="Panel1")
+    let panel = new Panel(Top=670, Size=new Size(1220, 130))
     
     let colors = [|"Blue";"Red";"Green";"Yellow";"Purple"; "Brown"; "Pink"; "Black"|]
     let comboBoxColor = new ComboBox(Top=710, Left=340, DropDownStyle = ComboBoxStyle.DropDownList, DataSource=colors)
     
 
-    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove]
+    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove; btnMoveUp; btnMoveDown]
 
-    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; panel|]
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; btnMoveUp; btnMoveDown; panel|]
     
