@@ -25,12 +25,13 @@ module GUI =
     let btnResizesmall = new Button(Text="Resize smaller", Top=160)
     let btnResizebig = new Button(Text="Resize bigger", Top=180)
     let btnSave = new Button(Text="Save to file", Top=200)
+    let btnLoad = new Button(Text="Load from file", Top=220)
     
     let items = [|"Blue";"Red";"Green";"Yellow";"Purple"|]
     let comboBoxColor = new ComboBox(Top=20, Left=120, DataSource=items, DropDownStyle = ComboBoxStyle.DropDownList)
     
 
-    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnSave]
+    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnSave; btnLoad]
 
-    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnSave;|]
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnSave; btnLoad;|]
     

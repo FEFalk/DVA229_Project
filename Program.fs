@@ -65,25 +65,36 @@ module Main =
                                     else return! loop observable shapeList (selectedID + 1)
         | "Resize smaller" ->       return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize false) shapeList) selectedID
         | "Resize bigger" ->        return! loop observable (replaceRectangle ((getShape shapeList selectedID).resize true) shapeList) selectedID
-        | "Save to file" ->         let ParseFile = 
-                                        let ParseFile = File.ReadAllLines("C:\\Users\\Frenning\\Documents\\Test.txt")
-    
-                                        let ParseFileForErrors = 
-                                            ParseFile
-                                            |> Seq.filter(fun x -> if x.Contains("_warning_") then false else true)
-    
-                                        let ParseFileForWarnings = 
-                                            ParseFile
-                                            |> Seq.filter(fun x -> if x.Contains("_warning_") then true else false)
+        | "Save to file" ->         let objectToString (o : ShapeObject) = (o.Rect.X.ToString()) + " " + (o.Rect.Y.ToString()) + " " + (o.Rect.Width.ToString()) + " " + 
+                                                                           (o.Rect.Height.ToString()) + " " + (o.Color.R.ToString()) + " " + (o.Color.G.ToString()) + " " + 
+                                                                           (o.Color.B.ToString()) + " " + (o.isRect.ToString()) + " " + (o.id.ToString())
 
-                                        let myFileSet = 
-                                            let mySubFileSet = Seq.append ParseFileForErrors ParseFileForWarnings    
-                                            let FileSummary = "Number of Entries : " + ParseFile.Length.ToString() + " Number of Errors : " + (ParseFileForErrors |> Seq.length).ToString()
-                                            Seq.append ( FileSummary |> Seq.singleton) mySubFileSet
+                                    let rec writeString (l : ShapeObject List) = match l with
+                                                                                    | [] -> failwith "Empty"
+                                                                                    | x::[] -> objectToString x
+                                                                                    | x::xs -> objectToString x + "\n" + writeString xs
+                                    let string1 = writeString shapeList
 
-                                        File.WriteAllLines("C:\\Users\\Frenning\\Documents\\Test.txt", myFileSet) 
+                                    let printStringToFile fileName =
+                                       use file = System.IO.File.CreateText(fileName)
+                                       fprintfn file "%s" string1
+                                    printStringToFile "C:\\Users\\Frenning\\Documents\\Test.txt"
                                     
-                                    ParseFile 
+                                    return! loop observable shapeList selectedID
+         | "Load from file" ->      use sr = new StreamReader ("C:\\Users\\Frenning\\Documents\\Test.txt")
+                                    let readLine = if not sr.EndOfStream then sr.ReadLine() else failwith "Reached EOF. Terminating..."
+                                    printf "%s" readLine
+                                    printf "\n"
+                                    let words =
+                                        let splittedList = Seq.toList (readLine.Split (' ', '\n'))
+                                        splittedList
+                                    
+                                        
+                                    let stringToFloat = new RectangleF(((List.head words) : float32), ((List.nth words 1) : float32), ((List.nth words 2) : float32), ((List.nth words 3) : float32)) 
+//                                    let color = new Color(((List.nth words 4) : byte), ((List.nth words 5) : byte), ((List.nth words 6) : byte))
+//                                    let bool = ((List.Item 7 words) : bool)
+//                                    let id = ((List.Item 8 words) : int)
+                                    sr.Close()
                                     return! loop observable shapeList selectedID
 //        | 9 -> return! loop observable (removeShape shapeList selectedID) selectedID
     
