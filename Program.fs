@@ -10,7 +10,9 @@ open System.Windows.Forms
 
 open System.ComponentModel  
 open System.Drawing  
+open System.IO
 open Shape
+
 
 module Main =
     let brushArray = [new SolidBrush(Color.Blue);new SolidBrush(Color.Red);new SolidBrush(Color.Green);new SolidBrush(Color.Yellow);
@@ -29,6 +31,8 @@ module Main =
         GUI.form.Update()
         
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
+     
+
         for r in shapeList do
 //            for r2 in shapeList do
 //                if r1.Rect.IntersectsWith(r2.Rect) then (intersectionRectangle r1 r2).
@@ -71,9 +75,56 @@ module Main =
         | "Resize smaller" | "Z" -> return! loop observable (replaceRectangle (selectedShape.resize false) shapeList) selectedID
         | "Remove" | "R" -> return! loop observable (removeShape shapeList selectedID) -1
         | _ -> return! loop observable shapeList selectedID
+        | "Save to file" ->         let objectToString (o : ShapeObject) = (o.Rect.X.ToString()) + " " + (o.Rect.Y.ToString()) + " " + (o.Rect.Width.ToString()) + " " + 
+                                                                           (o.Rect.Height.ToString()) + " " + (o.Color.R.ToString()) + " " + (o.Color.G.ToString()) + " " + 
+                                                                           (o.Color.B.ToString()) + " " + (o.isRect.ToString()) + " " + (o.id.ToString())
+
+                                    let rec writeString (l : ShapeObject List) = match l with
+                                                                                    | [] -> failwith "Empty"
+                                                                                    | x::[] -> objectToString x
+                                                                                    | x::xs -> objectToString x + "\n" + writeString xs
+                                    let string1 = writeString shapeList
+
+                                    let printStringToFile fileName =
+                                       use file = System.IO.File.CreateText(fileName)
+                                       fprintfn file "%s" string1
+                                    printStringToFile "C:\\Users\\Frenning\\Documents\\Test.txt"
+                                    
+                                    return! loop observable shapeList selectedID
+
+        | "Load from file" ->   use sr = new StreamReader ("C:\\Users\\Frenning\\Documents\\Test.txt")
+                                let readLine = if not sr.EndOfStream then sr.ReadLine() else failwith "Reached EOF. Terminating..."
+                                printf "%s" readLine
+                                printf "\n"
+                                let words =
+                                    let splittedList = Seq.toList (readLine.Split (' ', '\n'))
+                                    splittedList
+
+                                let stringToObject (words : string list) = 
+                                        let x = float32 (List.head words) 
+                                        let y = float32 (List.nth words 1)
+                                        let w = float32 (List.nth words 2)
+                                        let h = float32 (List.nth words 3)
+                                        let cr = int (List.nth words 4)
+                                        let cg = int (List.nth words 5)
+                                        let cb = int (List.nth words 6)
+                                        let isRect = Boolean.Parse (List.nth words 7)
+                                        let id = int (List.nth words 8)
+                                        let color = Color.FromArgb(255, cr, cg, cb)
+                                        new ShapeObject(x, y, w, h, color, isRect, id)
+                                    
+
+                                let readShape = stringToObject words
+                                let readShapeList = readShape::[]
+
+                                sr.Close()
+                                return! loop observable readShapeList selectedID
+
 
         //The last thing we do is a recursive call to ourselves, thus looping
     }
+
+      
 
     //The GUIInterface is tightly coupled with the main loop which is its only intented user, thus the nested module
     module GUIInterface = 
@@ -93,18 +144,7 @@ module Main =
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
     let shapes : (ShapeObject) list = []
 
-    let stringToObject (words : string list) = let x = float32 (List.head words) 
-                                               let y = float32 (List.nth words 1)
-                                               let w = float32 (List.nth words 2)
-                                               let h = float32 (List.nth words 3)
-                                               let z = int (List.nth words 4)
-                                               let cr = int (List.nth words 5)
-                                               let cg = int (List.nth words 6)
-                                               let cb = int (List.nth words 7)
-                                               let isRect = Boolean.Parse (List.nth words 8)
-                                               let id = int (List.nth words 9)
-                                               let color = Color.FromArgb(255, cr, cg, cb)
-                                               new ShapeObject(x, y, w, h, z, color, isRect, id)
+
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes -1) ; System.Windows.Forms.Application.Run(GUI.form)

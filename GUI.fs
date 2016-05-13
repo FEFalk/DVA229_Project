@@ -52,12 +52,14 @@ module GUI =
     let btnMovey = new Button(Text="↑", Top=690, Left = 1070, Name="↑", Width=40)
     let btnMoveY = new Button(Text="↓", Top=720, Left = 1070, Name="↓", Width=40)
     let panel = new Panel(Top=670, Size=new Size(1220, 130))
+    let btnSave = new Button(Text="Save to file", Top=100,Left=10,Size=new Size(100, 40))
+    let btnLoad = new Button(Text="Load from file", Top=140,Left=10,Size=new Size(100, 40))
     
     let colors = [|"Blue";"Red";"Green";"Yellow";"Purple"; "Brown"; "Pink"; "Black"|]
     let comboBoxColor = new ComboBox(Top=710, Left=340, DropDownStyle = ComboBoxStyle.DropDownList, DataSource=colors)
     
 
-    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove; btnMoveUp; btnMoveDown]
+    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove; btnMoveUp; btnMoveDown; btnSave; btnLoad]
 
-    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; btnMoveUp; btnMoveDown; panel|]
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; btnSave; btnLoad; panel|]
     
