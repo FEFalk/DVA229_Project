@@ -103,6 +103,9 @@ module Shape =
                                                  | x::xs -> (createShapeByTypeName x.typeName x.X x.Y x.W x.H x.Zpos x.Color n)::HupdateID xs (n+1)
     let updateID l = HupdateID l 0
 
-    let removeShape (shapeList : (ShapeObject) list) id = let selectedShape = getShape shapeList id
-                                                          GUI.form.Invalidate(new Region(new RectangleF(selectedShape.X-40.0f, selectedShape.Y-40.0f, selectedShape.W*4.0f, selectedShape.H*4.0f)), false)
-                                                          if id = -1 then shapeList elif id = 0 && List.length shapeList = 1 then remove id shapeList else updateID (remove id shapeList)
+    let removeShape (shapeList : (ShapeObject) list) id = if id = -1 then shapeList 
+                                                          else let selectedShape = getShape shapeList id
+                                                               GUI.form.Invalidate(new Region(new RectangleF(selectedShape.X-40.0f, selectedShape.Y-40.0f, selectedShape.W*4.0f, selectedShape.H*4.0f)), false)
+                                                               GUI.form.Update()
+                                                               if id = 0 && List.length shapeList = 1 then remove id shapeList 
+                                                               else updateID (remove id shapeList)

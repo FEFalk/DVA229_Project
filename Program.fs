@@ -16,7 +16,9 @@ open Shape
 
 module Main =
 
+
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
+
     let rec loop observable (shapeList : (ShapeObject) list) selectedID = async{
 
         let selectedShape = if selectedID > -1 then getShape shapeList selectedID else createShape (new RectangleShape(Rectangle(0, 0, 0, 0), 0, Color.Black, -1))
@@ -34,8 +36,8 @@ module Main =
 
         selectedShape.drawOutline
 
-        printfn "no. of rects: %d" (List.length shapeList)
-        printfn "selected id: %d" (selectedID)
+        printfn "Number of active shapes: %d" (List.length shapeList)
+        printfn "Selected Shape-ID: %d" (selectedID)
 
         
         //Next, since we don't have all inputs (yet) we need to wait for them to become available (Async.Await)
@@ -74,11 +76,12 @@ module Main =
                                     let printStringToFile fileName =
                                        use file = System.IO.File.CreateText(fileName)
                                        fprintfn file "%s" string1
-                                    printStringToFile "C:\\Users\\Fille\\Documents\\GitHubVisualStudio\\DVA229_Project\\Test.txt"
+                                    printfn "Saving %d shape-objects to file at location: %s" (List.length shapeList) (Directory.GetCurrentDirectory() + "\\Shapes.txt")
+                                    printStringToFile (Directory.GetCurrentDirectory() + "\\Shapes.txt")
                                     
                                     return! loop observable shapeList selectedID
 
-        | "Load from file" ->   use sr = new StreamReader ("C:\\Users\\Fille\\Documents\\GitHubVisualStudio\\DVA229_Project\\Test.txt")
+        | "Load from file" ->   use sr = new StreamReader (Directory.GetCurrentDirectory() + "\\Shapes.txt")
                                 let rec readFile (s : StreamReader) (l : string list list) = match s with
                                                                                              | _ when s.EndOfStream = true -> l
                                                                                              | _ -> let objectString = sr.ReadLine()
@@ -93,7 +96,7 @@ module Main =
                                 sr.Close()
 
                                 GUI.form.Refresh()
-                                return! loop observable sortedNewShapeList selectedID
+                                return! loop observable sortedNewShapeList -1
 
         | "Exit" -> exit 0
         | _ -> return! loop observable shapeList selectedID
@@ -109,7 +112,7 @@ module Main =
 
         //Here we define what we will be observing (clicks)
         let observables = 
-             let rec mergeObs (x : Button list) = match x with
+             let rec mergeObs (x : #Control list) = match x with
                                                     | c::[] -> Observable.map (fun _-> c.Name) c.Click
                                                     | c::cs -> Observable.merge (Observable.map (fun _-> c.Name) c.Click) (mergeObs cs)
              Observable.merge (Observable.map (fun (e : KeyEventArgs) -> e.KeyCode.ToString()) GUI.form.KeyDown) (mergeObs GUI.buttonList)
@@ -124,7 +127,6 @@ module Main =
     //The map transforms the observation (click) by the given function. In our case this means
     //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
     let shapes : (ShapeObject) list = []
-
 
 
     //Starts the main loop and opens the GUI
