@@ -15,32 +15,24 @@ open Shape
 
 
 module Main =
-    let brushArray = [new SolidBrush(Color.Blue);new SolidBrush(Color.Red);new SolidBrush(Color.Green);new SolidBrush(Color.Yellow);
-                        new SolidBrush(Color.Purple);new SolidBrush(Color.Brown);new SolidBrush(Color.Pink);new SolidBrush(Color.Black)]
-    let pen = new Pen(Color.Aquamarine, Width=2.0f)
-    let rec getBrushWithColor c (array : SolidBrush list) = match array with
-                                                            | [] -> failwith "Color was not found in brush list!"
-                                                            | x::xs when x.Color = c -> x
-                                                            | x::xs -> getBrushWithColor c xs
 
-           
     //This main function loops using async and Async.Await. See lecture F13 for alternatives.
     let rec loop observable (shapeList : (ShapeObject) list) selectedID = async{
-        let selectedShape = getShape shapeList selectedID
-        GUI.form.Invalidate(new Region(new RectangleF(selectedShape.Rect.X-42.0f, selectedShape.Rect.Y-42.0f, selectedShape.Rect.Width*2.0f+80.0f, selectedShape.Rect.Height*2.0f+80.0f)), false)
-        GUI.form.Update()
+
+        let selectedShape = if selectedID > -1 then getShape shapeList selectedID else createShape (new RectangleShape(Rectangle(0, 0, 0, 0), 0, Color.Black, -1))
         
+        if selectedShape.id > -1 then GUI.form.Invalidate(new Region(new RectangleF(selectedShape.X-44.0f, selectedShape.Y-44.0f, selectedShape.W*2.0f+80.0f, selectedShape.H*2.0f+80.0f)), false)
+                                      GUI.form.Update()
+                                      
         //At the start we do the computations that we can do with the inputs we have, just as in a regular application
      
+        //Sort the list by z-pos so that we draw the shapes in the right Z-order.
+        let sortedShapeList = List.sortBy (fun (elem : ShapeObject) -> elem.Zpos) shapeList
 
-        for r in shapeList do
-//            for r2 in shapeList do
-//                if r1.Rect.IntersectsWith(r2.Rect) then (intersectionRectangle r1 r2).
-            if r.isRect then GUI.graph.FillRectangle(getBrushWithColor r.Color brushArray, Rectangle.Round r.Rect)
-            else GUI.graph.FillEllipse(getBrushWithColor r.Color brushArray, r.Rect)
-        if selectedID > -1 then if selectedShape.isRect then GUI.graph.DrawRectangle(pen, Rectangle.Round selectedShape.Rect)
-                                                        else GUI.graph.DrawEllipse(pen, selectedShape.Rect)
-        
+        for r in sortedShapeList do
+            r.drawShape
+
+        selectedShape.drawOutline
 
         printfn "no. of rects: %d" (List.length shapeList)
         printfn "selected id: %d" (selectedID)
@@ -50,75 +42,61 @@ module Main =
         //let! (bang) enables execution to continue on other computations and threads.
         let! somethingObservable = Async.AwaitObservable(observable) 
 
-        //TODO: MOVE OBJECT UPWARDS/DOWNWARDS IN Z
         //Now that we have recieved a new input we can perform the rest of our computations
         match somethingObservable with
         | "Add square" | "T"->  let selectedColor = Color.FromName(GUI.comboBoxColor.Text)
-                                return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, 0, selectedColor, true, -1))) selectedID
+                                return! loop observable (addShape shapeList (new RectangleShape(new Rectangle(400, 400, 40, 40), 0, selectedColor, (List.length shapeList)))) selectedID
         | "Add circle" | "Y"-> let selectedColor = Color.FromName(GUI.comboBoxColor.Text)
-                               return! loop observable (addShape shapeList (new ShapeObject(400.0f, 400.0f, 40.0f, 40.0f, 0, selectedColor, false, -1))) selectedID
-        | "→" | "D" -> return! loop observable (replaceRectangle (selectedShape.moveX true) shapeList) selectedID
-        | "←" | "A" -> return! loop observable (replaceRectangle (selectedShape.moveX false) shapeList) selectedID
-        | "↑" | "W" -> return! loop observable (replaceRectangle (selectedShape.moveY true) shapeList) selectedID
-        | "↓" | "S" -> return! loop observable (replaceRectangle (selectedShape.moveY false) shapeList) selectedID
+                               return! loop observable (addShape shapeList (new CircleShape(new RectangleF(400.0f, 400.0f, 40.0f, 40.0f), 0, selectedColor, (List.length shapeList)))) selectedID
+        | "→" | "D" -> return! loop observable (replaceShape (moveX selectedShape true) shapeList) selectedID
+        | "←" | "A" -> return! loop observable (replaceShape (moveX selectedShape false) shapeList) selectedID
+        | "↑" | "W" -> return! loop observable (replaceShape (moveY selectedShape true) shapeList) selectedID
+        | "↓" | "S" -> return! loop observable (replaceShape (moveY selectedShape false) shapeList) selectedID
         | "Set color" | "C" -> let selectedColor = Color.FromName(GUI.comboBoxColor.Text)
-                               return! loop observable (replaceRectangle (selectedShape.changeColor selectedColor) shapeList) selectedID
+                               return! loop observable (replaceShape (changeColor selectedShape selectedColor) shapeList) selectedID
                             //If list is empty we want nothing to be selected. If at end of list we want to start over from the head (index 0).
         | "Select next" | "N" ->  if List.isEmpty shapeList then return! loop observable shapeList -1 
                                   //Get rid of previous "Selected"-highlight
-                                  GUI.form.Invalidate(new Region(new RectangleF(selectedShape.Rect.X-42.0f, selectedShape.Rect.Y-42.0f, selectedShape.Rect.Width*4.0f, selectedShape.Rect.Height*4.0f)), false)
+                                  GUI.form.Invalidate(new Region(new RectangleF(selectedShape.X-42.0f, selectedShape.Y-42.0f, selectedShape.W*4.0f, selectedShape.H*4.0f)), false)
                                   if selectedID >= (List.length shapeList - 1) then return! loop observable shapeList 0 
                                                                                else return! loop observable shapeList (selectedID + 1)
-        | "Move Forward" | "F" -> return! loop observable (replaceRectangle (selectedShape.moveZ true) shapeList) selectedID
-        | "Move Backward" | "G" -> return! loop observable (replaceRectangle (selectedShape.moveZ false) shapeList) selectedID
-        | "Resize bigger" | "X" -> return! loop observable (replaceRectangle (selectedShape.resize true) shapeList) selectedID
-        | "Resize smaller" | "Z" -> return! loop observable (replaceRectangle (selectedShape.resize false) shapeList) selectedID
+        | "Move Forward" | "F" -> return! loop observable (replaceShape (moveZ selectedShape true) shapeList) selectedID
+        | "Move Backward" | "G" -> return! loop observable (replaceShape (moveZ selectedShape false) shapeList) selectedID
+        | "Resize bigger" | "X" -> return! loop observable (replaceShape (resize selectedShape true) shapeList) selectedID
+        | "Resize smaller" | "Z" -> return! loop observable (replaceShape (resize selectedShape false) shapeList) selectedID
         | "Remove" | "R" -> return! loop observable (removeShape shapeList selectedID) -1
-        | _ -> return! loop observable shapeList selectedID
-        | "Save to file" ->         let objectToString (o : ShapeObject) = (o.Rect.X.ToString()) + " " + (o.Rect.Y.ToString()) + " " + (o.Rect.Width.ToString()) + " " + 
-                                                                           (o.Rect.Height.ToString()) + " " + (o.Color.R.ToString()) + " " + (o.Color.G.ToString()) + " " + 
-                                                                           (o.Color.B.ToString()) + " " + (o.isRect.ToString()) + " " + (o.id.ToString())
-
-                                    let rec writeString (l : ShapeObject List) = match l with
-                                                                                    | [] -> failwith "Empty"
-                                                                                    | x::[] -> objectToString x
-                                                                                    | x::xs -> objectToString x + "\n" + writeString xs
+        | "Save to file" ->         let rec writeString (l : ShapeObject List) = match l with
+                                                                                 | [] -> failwith "Empty"
+                                                                                 | x::[] -> objectToString x
+                                                                                 | x::xs -> objectToString x + "\n" + writeString xs
                                     let string1 = writeString shapeList
 
                                     let printStringToFile fileName =
                                        use file = System.IO.File.CreateText(fileName)
                                        fprintfn file "%s" string1
-                                    printStringToFile "C:\\Users\\Frenning\\Documents\\Test.txt"
+                                    printStringToFile "C:\\Users\\Fille\\Documents\\GitHubVisualStudio\\DVA229_Project\\Test.txt"
                                     
                                     return! loop observable shapeList selectedID
 
-        | "Load from file" ->   use sr = new StreamReader ("C:\\Users\\Frenning\\Documents\\Test.txt")
-                                let readLine = if not sr.EndOfStream then sr.ReadLine() else failwith "Reached EOF. Terminating..."
-                                printf "%s" readLine
-                                printf "\n"
-                                let words =
-                                    let splittedList = Seq.toList (readLine.Split (' ', '\n'))
-                                    splittedList
+        | "Load from file" ->   use sr = new StreamReader ("C:\\Users\\Fille\\Documents\\GitHubVisualStudio\\DVA229_Project\\Test.txt")
+                                let rec readFile (s : StreamReader) (l : string list list) = match s with
+                                                                                             | _ when s.EndOfStream = true -> l
+                                                                                             | _ -> let objectString = sr.ReadLine()
+                                                                                                    printfn "%s" objectString
+                                                                                                    readFile s (Array.toList(objectString.Split(' ', '\n'))::l)
+                                let objectStringList = readFile sr []
 
-                                let stringToObject (words : string list) = 
-                                        let x = float32 (List.head words) 
-                                        let y = float32 (List.nth words 1)
-                                        let w = float32 (List.nth words 2)
-                                        let h = float32 (List.nth words 3)
-                                        let cr = int (List.nth words 4)
-                                        let cg = int (List.nth words 5)
-                                        let cb = int (List.nth words 6)
-                                        let isRect = Boolean.Parse (List.nth words 7)
-                                        let id = int (List.nth words 8)
-                                        let color = Color.FromArgb(255, cr, cg, cb)
-                                        new ShapeObject(x, y, w, h, color, isRect, id)
-                                    
+                                let newShapeList =  stringListToObjects objectStringList
 
-                                let readShape = stringToObject words
-                                let readShapeList = readShape::[]
+                                let sortedNewShapeList = List.sortBy (fun (elem : ShapeObject) -> elem.id) newShapeList
 
                                 sr.Close()
-                                return! loop observable readShapeList selectedID
+
+                                GUI.form.Refresh()
+                                return! loop observable sortedNewShapeList selectedID
+
+        | "Exit" -> exit 0
+        | _ -> return! loop observable shapeList selectedID
 
 
         //The last thing we do is a recursive call to ourselves, thus looping
@@ -135,6 +113,9 @@ module Main =
                                                     | c::[] -> Observable.map (fun _-> c.Name) c.Click
                                                     | c::cs -> Observable.merge (Observable.map (fun _-> c.Name) c.Click) (mergeObs cs)
              Observable.merge (Observable.map (fun (e : KeyEventArgs) -> e.KeyCode.ToString()) GUI.form.KeyDown) (mergeObs GUI.buttonList)
+             |> Observable.merge (Observable.map (fun _-> GUI.menuItemsList.Head.Name) GUI.menuItemsList.Head.Click) 
+             |> Observable.merge (Observable.map (fun _-> (List.nth GUI.menuItemsList 1).Name) (List.nth GUI.menuItemsList 1).Click) 
+             |> Observable.merge (Observable.map (fun _-> (List.nth GUI.menuItemsList 2).Name) (List.nth GUI.menuItemsList 2).Click) 
 
 
 

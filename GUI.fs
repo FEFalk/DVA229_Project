@@ -35,31 +35,46 @@ module GUI =
 
     let form = new MainWindow(Width=1220, Height= 800)
     form.Init()
-    let graph : Graphics = form.CreateGraphics()         
+    let graph : Graphics = form.CreateGraphics()      
+    
+    let brushArray = [new SolidBrush(Color.Blue);new SolidBrush(Color.Red);new SolidBrush(Color.Green);new SolidBrush(Color.Yellow);
+                        new SolidBrush(Color.Purple);new SolidBrush(Color.Brown);new SolidBrush(Color.Pink);new SolidBrush(Color.Black)]
+    
+    let pen = new Pen(Color.Aquamarine, Width=4.0f)
+    let rec getBrushWithColor (c : Color) (array : SolidBrush list) = match array with
+                                                                      | [] -> failwith "Color was not found in brush list!"
+                                                                      | x::xs when (x.Color).ToArgb() = c.ToArgb() -> x
+                                                                      | x::xs -> getBrushWithColor c xs
 
     //TODO: MOVE OBJECT UPWARDS/DOWNWARDS IN Z
-    let btnAddRect = new Button(Text="Add square (T)", Top=700, Left=10, Size=new Size(100, 40), Name="Add square")
-    let btnAddCircle = new Button(Text="Add circle (Y)", Top=700, Left=120, Size=new Size(100, 40), Name="Add circle")
-    let btnSetcolor = new Button(Text="Set color (C)", Top=700, Left=230, Size=new Size(100, 40), Name="Set color")
-    let btnSelect = new Button(Text="Select next (N)", Top=700, Left=500, Size=new Size(100, 40), Name="Select next")
-    let btnResizesmall = new Button(Text="Resize smaller (Z)", Top=700, Left=620, Size=new Size(100, 40), Name="Resize smaller")
-    let btnResizebig = new Button(Text="Resize bigger (X)", Top=700, Left=740, Size=new Size(100, 40), Name="Resize bigger")
-    let btnRemove = new Button(Text="Remove (R)", Top=700, Left=860, Size=new Size(100, 40), Name="Remove")
-    let btnMoveUp = new Button(Text="Move Forward (F)", Top=650, Left=800, Size=new Size(100, 40), Name="Move Forward")
-    let btnMoveDown = new Button(Text="Move Backward (G)", Top=650, Left=900, Size=new Size(100, 40), Name="Move Backward")
-    let btnMoveX = new Button(Text="←", Top=720, Left = 1020, Name="←", Width=40)
-    let btnMovex = new Button(Text="→", Top=720, Left = 1130, Name="→", Width=40)
-    let btnMovey = new Button(Text="↑", Top=690, Left = 1070, Name="↑", Width=40)
-    let btnMoveY = new Button(Text="↓", Top=720, Left = 1070, Name="↓", Width=40)
-    let panel = new Panel(Top=670, Size=new Size(1220, 130))
-    let btnSave = new Button(Text="Save to file", Top=100,Left=10,Size=new Size(100, 40))
-    let btnLoad = new Button(Text="Load from file", Top=140,Left=10,Size=new Size(100, 40))
+    let btnAddRect = new Button(Text="Add square (T)", Top=690, Left=10, Size=new Size(100, 40), Name="Add square")
+    let btnAddCircle = new Button(Text="Add circle (Y)", Top=690, Left=120, Size=new Size(100, 40), Name="Add circle")
+    let btnSetcolor = new Button(Text="Set color (C)", Top=690, Left=230, Size=new Size(100, 40), Name="Set color")
+    let btnSelect = new Button(Text="Select next (N)", Top=690, Left=500, Size=new Size(100, 40), Name="Select next")
+    let btnResizesmall = new Button(Text="Resize smaller (Z)", Top=690, Left=620, Size=new Size(100, 40), Name="Resize smaller")
+    let btnResizebig = new Button(Text="Resize bigger (X)", Top=690, Left=740, Size=new Size(100, 40), Name="Resize bigger")
+    let btnRemove = new Button(Text="Remove (R)", Top=690, Left=860, Size=new Size(100, 40), Name="Remove")
+    let btnMoveUp = new Button(Text="Move Forward (F)", Top=675, Left=970, Size=new Size(80, 30), Name="Move Forward")
+    let btnMoveDown = new Button(Text="Move Backward (G)", Top=675, Left=1120, Size=new Size(80, 30), Name="Move Backward")
+    let btnMoveX = new Button(Text="←", Top=710, Left = 1010, Name="←", Width=40)
+    let btnMovex = new Button(Text="→", Top=710, Left = 1120, Name="→", Width=40)
+    let btnMovey = new Button(Text="↑", Top=680, Left = 1060, Name="↑", Width=40)
+    let btnMoveY = new Button(Text="↓", Top=710, Left = 1060, Name="↓", Width=40)
+    let panel = new Panel(Top=660, Size=new Size(1220, 130))
+    let btnFile = new MenuItem(Text="File")
+    let menuItemLoad = new MenuItem(Text="Load", Name="Load from file")
+    let menuItemSave = new MenuItem(Text="Save", Name="Save to file")
+    let menuItemExit = new MenuItem(Text="Exit", Name="Exit", Shortcut=Shortcut.CtrlX)
+    btnFile.MenuItems.AddRange [|menuItemLoad; menuItemSave; menuItemExit|]
+    let menu = new MainMenu([|btnFile|])
+    form.Menu <- menu
+
     
     let colors = [|"Blue";"Red";"Green";"Yellow";"Purple"; "Brown"; "Pink"; "Black"|]
-    let comboBoxColor = new ComboBox(Top=710, Left=340, DropDownStyle = ComboBoxStyle.DropDownList, DataSource=colors)
-    
+    let comboBoxColor = new ComboBox(Top=700, Left=340, DropDownStyle = ComboBoxStyle.DropDownList, DataSource=colors)
+   
+    let menuItemsList = [menuItemLoad; menuItemSave; menuItemExit]
+    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove; btnMoveUp; btnMoveDown]
 
-    let buttonList = [btnAddRect; btnAddCircle; btnMovex; btnMoveX; btnMovey; btnMoveY; btnSetcolor; btnSelect; btnResizesmall; btnResizebig; btnRemove; btnMoveUp; btnMoveDown; btnSave; btnLoad]
-
-    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; btnSave; btnLoad; panel|]
+    form.Controls.AddRange [| btnAddRect ; btnAddCircle; btnMovex ; btnMoveX; btnMovey ; btnMoveY; btnSetcolor ; btnSelect; btnResizesmall ; btnResizebig; comboBoxColor; btnRemove; btnMoveUp; btnMoveDown; panel|]
     
