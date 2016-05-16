@@ -1,8 +1,6 @@
-﻿//Project L4_DVA229
-//Created by Björn Dagerman 2015/05 (dagerman@kth.se)
+﻿//Project DVA229
+//Created by Filiph Eriksson-Falk(ffk13001@student.mdh.se) & Fredrik Frenning (ffg12002@student.mdh.se)
 //
-//Main
-
 namespace Demo
 open FSharpx.Control.Observable //Fsharpx
 open System  
@@ -15,18 +13,14 @@ open Shape
 
 
 module Main =
-
-
-    //This main function loops using async and Async.Await. See lecture F13 for alternatives.
-
     let rec loop observable (shapeList : (ShapeObject) list) selectedID = async{
-
+        //At the start we do the computations that we can do with the inputs we have, just as in a regular application
         let selectedShape = if selectedID > -1 then getShape shapeList selectedID else createShape (new RectangleShape(Rectangle(0, 0, 0, 0), 0, Color.Black, -1))
         
         if selectedShape.id > -1 then GUI.form.Invalidate(new Region(new RectangleF(selectedShape.X-44.0f, selectedShape.Y-44.0f, selectedShape.W*2.0f+80.0f, selectedShape.H*2.0f+80.0f)), false)
                                       GUI.form.Update()
                                       
-        //At the start we do the computations that we can do with the inputs we have, just as in a regular application
+        
      
         //Sort the list by z-pos so that we draw the shapes in the right Z-order.
         let sortedShapeList = List.sortBy (fun (elem : ShapeObject) -> elem.Zpos) shapeList
@@ -111,6 +105,7 @@ module Main =
     module GUIInterface = 
 
         //Here we define what we will be observing (clicks)
+        //The map transforms the observation (click) by the given function.
         let observables = 
              let rec mergeObs (x : #Control list) = match x with
                                                     | c::[] -> Observable.map (fun _-> c.Name) c.Click
@@ -121,14 +116,8 @@ module Main =
              |> Observable.merge (Observable.map (fun _-> (List.nth GUI.menuItemsList 2).Name) (List.nth GUI.menuItemsList 2).Click) 
 
 
-
-
-
-    //The map transforms the observation (click) by the given function. In our case this means
-    //that clicking the button AddX will return X. Note the type of observables : IObservable<int>
     let shapes : (ShapeObject) list = []
 
 
     //Starts the main loop and opens the GUI
     Async.StartImmediate(loop GUIInterface.observables shapes -1) ; System.Windows.Forms.Application.Run(GUI.form)
-

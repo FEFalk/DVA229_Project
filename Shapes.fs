@@ -1,12 +1,11 @@
-﻿
+﻿//Project DVA229
+//Created by Filiph Eriksson-Falk(ffk13001@student.mdh.se) & Fredrik Frenning (ffg12002@student.mdh.se)
+//
 namespace Demo
 module Shape =
     open System.Drawing 
     open System.Windows.Forms 
 
-    //TODO : INHERITENCE MED CIRKEL/REKTANGEL 
-    //  "The interested student may extend the project in a number of ways, 
-    //  including adding more shapes, introducing connectors between shapes, adding text boxes, etc."
     [<AbstractClass>]
     type ShapeObject(typeName : string, xPos : float32, yPos : float32, w : float32, h : float32, z : int, c, id : int) =
         abstract member drawShape: unit -> unit with get
@@ -20,11 +19,6 @@ module Shape =
         member val Color = c
         member val id = id
 
-//    [<AbstractClass>]
-//    type MoveableShapeObject(typeName : string, xPos : float32, yPos : float32, w : float32, h : float32, z : int, c, id : int) =
-//        inherit ShapeObject(typeName, xPos, yPos, w, h, z, c, id)
-//        override this.moveX movingRight = if movingRight then (createShapeByTypeName this.typeName this.X+40.0f this.Y this.W this.H this.Zpos this.Color this.id)
-//                                                            else (new ShapeObject(this.X-40.0f, this.Y, this.W, this.H, this.Zpos, this.Color, this.id))
     type RectangleShape(r : Rectangle, z : int, c : Color, id : int) =
         inherit ShapeObject("Square", (float32 r.X), (float32 r.Y), (float32 r.Width), (float32 r.Height), z, c, id)
         member val RectangleShape : Rectangle = new Rectangle(r.X, r.Y, r.Width, r.Height)
@@ -78,7 +72,7 @@ module Shape =
                                                                      | x::[] -> [stringToObject x]
                                                                      | x::xs -> (stringToObject x)::stringListToObjects xs
 
-                                                                                  //If trying to access rect without having one selected
+                                                                              //If trying to access rect without having one selected
     let rec replaceShape (r : ShapeObject) (shapeList : (ShapeObject) list) = if r.id = -1 then shapeList
                                                                                     else match shapeList with
                                                                                             | [] -> shapeList

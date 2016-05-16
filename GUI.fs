@@ -1,13 +1,12 @@
-﻿//Project L4_DVA229
-//Created by Björn Dagerman 2015/05 (dagerman@kth.se)
+﻿//Project DVA229
+//Created by Filiph Eriksson-Falk(ffk13001@student.mdh.se) & Fredrik Frenning (ffg12002@student.mdh.se)
 //
-//GUI: Creates a simple form with two buttons
 namespace Demo
 open System.Drawing  
 module GUI = 
     open System.Windows.Forms
     open System.Data
-    /// Double-buffered form
+    // Double-buffered form
     type MainWindow () as this =
         inherit Form()
         member this.Init() =
@@ -21,7 +20,6 @@ module GUI =
             this.SetStyle(ControlStyles.UserPaint, true)
             this.SetStyle(ControlStyles.ResizeRedraw, true)
             this.KeyPreview <- true
-            //this.Paint.AddHandler(new System.Windows.Forms.PaintEventHandler(fun s pe -> this.Event_Paint(s, pe)))
 
         override this.OnPaintBackground(e : PaintEventArgs) = 
             e.Graphics.Clear(Color.White)
@@ -46,7 +44,6 @@ module GUI =
                                                                       | x::xs when (x.Color).ToArgb() = c.ToArgb() -> x
                                                                       | x::xs -> getBrushWithColor c xs
 
-    //TODO: MOVE OBJECT UPWARDS/DOWNWARDS IN Z
     let btnAddRect = new Button(Text="Add square (T)", Top=690, Left=10, Size=new Size(100, 40), Name="Add square")
     let btnAddCircle = new Button(Text="Add circle (Y)", Top=690, Left=120, Size=new Size(100, 40), Name="Add circle")
     let btnSetcolor = new Button(Text="Set color (C)", Top=690, Left=230, Size=new Size(100, 40), Name="Set color")
